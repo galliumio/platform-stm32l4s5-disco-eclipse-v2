@@ -48,6 +48,25 @@ FW_DEFINE_THIS_FILE("UartAct.cpp")
 
 namespace APP {
 
+#undef ADD_EVT
+#define ADD_EVT(e_) #e_,
+
+static char const * const timerEvtName[] = {
+    "UART_ACT_TIMER_EVT_START",
+    UART_ACT_TIMER_EVT
+};
+
+static char const * const internalEvtName[] = {
+    "UART_ACT_INTERNAL_EVT_START",
+    UART_ACT_INTERNAL_EVT
+};
+
+static char const * const interfaceEvtName[] = {
+    "UART_ACT_INTERFACE_EVT_START",
+    UART_ACT_INTERFACE_EVT
+};
+
+
 UartAct::HsmnHalMap &UartAct::GetHsmnHalMap() {
     static HsmnHal hsmnHalStor[UART_ACT_COUNT];
     static HsmnHalMap hsmnHalMap(hsmnHalStor, ARRAY_COUNT(hsmnHalStor), HsmnHal(HSM_UNDEF, NULL));
@@ -84,24 +103,6 @@ uint16_t UartAct::GetInst(Hsmn hsmn) {
     FW_ASSERT(inst < UART_ACT_COUNT);
     return inst;
 }
-
-static char const * const timerEvtName[] = {
-    "STATE_TIMER",
-};
-
-static char const * const internalEvtName[] = {
-    "START",
-    "DONE",
-    "FAIL",
-};
-
-static char const * const interfaceEvtName[] = {
-    "UART_ACT_START_REQ",
-    "UART_ACT_START_CFM",
-    "UART_ACT_STOP_REQ",
-    "UART_ACT_STOP_CFM",
-    "UART_ACT_FAIL_IND",
-};
 
 extern "C" void HAL_UART_TxCpltCallback(UART_HandleTypeDef *hal) {
     Hsmn hsmn = UartAct::GetHsmn(hal);
@@ -503,8 +504,7 @@ QState UartAct::Normal(UartAct * const me, QEvt const * const e) {
         case UART_OUT_FAIL_IND: {
             EVENT(e);
             ErrorEvt const &ind = ERROR_EVT_CAST(*e);
-            Evt *evt = new UartActFailInd(ind.GetError(), ind.GetOrigin(), ind.GetReason());
-            me->Send(evt, me->m_client);
+            me->Send(new UartActFailInd(ind.GetError(), ind.GetOrigin(), ind.GetReason()), me->m_client);
             status = Q_TRAN(&UartAct::Failed);
             break;
         }

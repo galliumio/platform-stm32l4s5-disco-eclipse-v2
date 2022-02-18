@@ -91,16 +91,27 @@ protected:
         ACTIVE_TIMEOUT_MS = 10
     };
 
+#define UART_IN_TIMER_EVT \
+    ADD_EVT(ACTIVE_TIMER)
+
+#define UART_IN_INTERNAL_EVT \
+    ADD_EVT(DONE) \
+    ADD_EVT(DATA_RDY) \
+    ADD_EVT(DMA_RECV) \
+    ADD_EVT(FIFO_OVERFLOW) \
+    ADD_EVT(HW_FAIL)
+
+#undef ADD_EVT
+#define ADD_EVT(e_) e_,
+
     enum {
-        ACTIVE_TIMER = TIMER_EVT_START(UART_IN),
+        UART_IN_TIMER_EVT_START = TIMER_EVT_START(UART_IN),
+        UART_IN_TIMER_EVT
     };
 
     enum {
-        DONE = INTERNAL_EVT_START(UART_IN),
-        DATA_RDY,
-        DMA_RECV,
-        FIFO_OVERFLOW,      // Can't use OVERFLOW since it conflicts with math.h
-        HW_FAIL,
+        UART_IN_INTERNAL_EVT_START = INTERNAL_EVT_START(UART_IN),
+        UART_IN_INTERNAL_EVT
     };
 };
 

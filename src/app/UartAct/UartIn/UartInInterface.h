@@ -48,13 +48,20 @@ using namespace FW;
 
 namespace APP {
 
+#define UART_IN_INTERFACE_EVT \
+    ADD_EVT(UART_IN_START_REQ) \
+    ADD_EVT(UART_IN_START_CFM) \
+    ADD_EVT(UART_IN_STOP_REQ) \
+    ADD_EVT(UART_IN_STOP_CFM) \
+    ADD_EVT(UART_IN_DATA_IND) \
+    ADD_EVT(UART_IN_FAIL_IND)
+
+#undef ADD_EVT
+#define ADD_EVT(e_) e_,
+
 enum {
-    UART_IN_START_REQ = INTERFACE_EVT_START(UART_IN),
-    UART_IN_START_CFM,
-    UART_IN_STOP_REQ,
-    UART_IN_STOP_CFM,
-    UART_IN_DATA_IND,
-    UART_IN_FAIL_IND
+    UART_IN_INTERFACE_EVT_START = INTERFACE_EVT_START(UART_IN),
+    UART_IN_INTERFACE_EVT
 };
 
 enum {
@@ -100,6 +107,9 @@ class UartInDataInd : public Evt {
 public:
     UartInDataInd() :
         Evt(UART_IN_DATA_IND) {}
+    // For forwarding or sending reminder (to keep 'from' and 'seq' in the original event).
+    UartInDataInd(Hsmn to, Hsmn from = HSM_UNDEF, Sequence seq = 0) :
+        Evt(UART_IN_DATA_IND, to, from, seq) {}
 };
 
 class UartInFailInd : public ErrorEvt {

@@ -80,15 +80,26 @@ protected:
         ACTIVE_TIMEOUT_MS = 1000,
     };
 
+#define UART_OUT_TIMER_EVT \
+    ADD_EVT(ACTIVE_TIMER)
+
+#define UART_OUT_INTERNAL_EVT \
+    ADD_EVT(DONE) \
+    ADD_EVT(DMA_DONE) \
+    ADD_EVT(CONTINUE) \
+    ADD_EVT(HW_FAIL)
+
+#undef ADD_EVT
+#define ADD_EVT(e_) e_,
+
     enum {
-        ACTIVE_TIMER = TIMER_EVT_START(UART_OUT),
+        UART_OUT_TIMER_EVT_START = TIMER_EVT_START(UART_OUT),
+        UART_OUT_TIMER_EVT
     };
 
     enum {
-        DONE = INTERNAL_EVT_START(UART_OUT),
-        DMA_DONE,
-        CONTINUE,
-        HW_FAIL,
+        UART_OUT_INTERNAL_EVT_START = INTERNAL_EVT_START(UART_OUT),
+        UART_OUT_INTERNAL_EVT
     };
 };
 

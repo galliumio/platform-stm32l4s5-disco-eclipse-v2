@@ -47,26 +47,22 @@ FW_DEFINE_THIS_FILE("UartOut.cpp")
 
 namespace APP {
 
+#undef ADD_EVT
+#define ADD_EVT(e_) #e_,
+
 static char const * const timerEvtName[] = {
-    "ACTIVE_TIMER",
+    "UART_OUT_TIMER_EVT_START",
+    UART_OUT_TIMER_EVT
 };
 
 static char const * const internalEvtName[] = {
-    "DONE",
-    "DMA_DONE",
-    "CONTINUE",
-    "HW_FAIL",
+    "UART_OUT_INTERNAL_EVT_START",
+    UART_OUT_INTERNAL_EVT
 };
 
 static char const * const interfaceEvtName[] = {
-    "UART_OUT_START_REQ",
-    "UART_OUT_START_CFM",
-    "UART_OUT_STOP_REQ",
-    "UART_OUT_STOP_CFM",
-    "UART_OUT_FAIL_IND",
-    "UART_OUT_WRITE_REQ",
-    "UART_OUT_WRITE_CFM",
-    "UART_OUT_EMPTY_IND",
+    "UART_OUT_INTERFACE_EVT_START",
+    UART_OUT_INTERFACE_EVT
 };
 
 static uint16_t GetInst(Hsmn hsmn) {
@@ -315,7 +311,6 @@ QState UartOut::Normal(UartOut * const me, QEvt const * const e) {
         case DMA_DONE: {
             //EVENT(e);
             me->m_fifo->IncReadIndex(me->m_writeCount);
-            Evt *evt;
             if (me->m_fifo->GetUsedCount()) {
                 me->Raise(new Evt(CONTINUE));
             } else {
@@ -379,6 +374,7 @@ QState UartOut::Failed(UartOut * const me, QEvt const * const e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             EVENT(e);
+            FW_ASSERT(0);
             status = Q_HANDLED();
             break;
         }

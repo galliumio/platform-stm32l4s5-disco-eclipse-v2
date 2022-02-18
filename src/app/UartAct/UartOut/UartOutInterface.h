@@ -49,17 +49,24 @@ using namespace FW;
 
 namespace APP {
 
-enum {
-    UART_OUT_START_REQ = INTERFACE_EVT_START(UART_OUT),
-    UART_OUT_START_CFM,
-    UART_OUT_STOP_REQ,
-    UART_OUT_STOP_CFM,
-    UART_OUT_FAIL_IND,
-    UART_OUT_WRITE_REQ,     // of type Evt (used by Log::Write() in fw_log.cpp)
-    UART_OUT_WRITE_CFM,
-    UART_OUT_EMPTY_IND,
-};
+// UART_OUT_WRITE_REQ is of type Evt (used by Log::Write() in fw_log.cpp).
+#define UART_OUT_INTERFACE_EVT \
+    ADD_EVT(UART_OUT_START_REQ) \
+    ADD_EVT(UART_OUT_START_CFM) \
+    ADD_EVT(UART_OUT_STOP_REQ) \
+    ADD_EVT(UART_OUT_STOP_CFM) \
+    ADD_EVT(UART_OUT_FAIL_IND) \
+    ADD_EVT(UART_OUT_WRITE_REQ) \
+    ADD_EVT(UART_OUT_WRITE_CFM) \
+    ADD_EVT(UART_OUT_EMPTY_IND)
 
+#undef ADD_EVT
+#define ADD_EVT(e_) e_,
+
+enum {
+    UART_OUT_INTERFACE_EVT_START = INTERFACE_EVT_START(UART_OUT),
+    UART_OUT_INTERFACE_EVT
+};
 
 enum {
     UART_OUT_REASON_UNSPEC = 0,
@@ -116,6 +123,9 @@ class UartOutEmptyInd : public Evt {
 public:
     UartOutEmptyInd() :
         Evt(UART_OUT_EMPTY_IND) {}
+    // For forwarding or sending reminder (to keep 'from' and 'seq' in the original event).
+    UartOutEmptyInd(Hsmn to, Hsmn from = HSM_UNDEF, Sequence seq = 0) :
+        Evt(UART_OUT_EMPTY_IND, to, from, seq) {}
 };
 
 } // namespace APP

@@ -226,6 +226,14 @@ public:
         return count;
     }
 
+    // Discards all data in pipe. It must NOT change writeIndex.
+    void Flush() {
+        QF_CRIT_STAT_TYPE crit;
+        QF_CRIT_ENTRY(crit);
+        m_readIndex = m_writeIndex;
+        QF_CRIT_EXIT(crit);
+    }
+
     // Reads a single entry without critical section.
     bool ReadNoCrit(Type &d) {
         if (IsEmpty()) {

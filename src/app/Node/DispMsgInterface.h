@@ -52,9 +52,8 @@ namespace APP {
 
 class DispTickerReqMsg final: public Msg {
 public:
-    DispTickerReqMsg(char const *to, uint16_t seq = 0,
-                     char const *text = MSG_UNDEF, uint32_t fgColor = 0, uint32_t bgColor = 0, uint16_t index = 0) :
-        Msg("DispTickerReqMsg", to, MSG_UNDEF, seq), m_fgColor(fgColor), m_bgColor(bgColor), m_index(index) {
+    DispTickerReqMsg(char const *text = MSG_UNDEF, uint32_t fgColor = 0, uint32_t bgColor = 0, uint16_t index = 0) :
+        Msg("DispTickerReqMsg"), m_fgColor(fgColor), m_bgColor(bgColor), m_index(index) {
         m_len = sizeof(*this);
         STRBUF_COPY(m_text, text);
     }
@@ -72,9 +71,8 @@ protected:
 
 class DispTickerCfmMsg final : public ErrorMsg {
 public:
-    DispTickerCfmMsg(char const *to, uint16_t seq = 0,
-                  char const *error = MSG_ERROR_SUCCESS, char const *origin = MSG_UNDEF, char const *reason = MSG_REASON_UNSPEC) :
-        ErrorMsg("DispTickerCfmMsg", to, MSG_UNDEF, seq, error, origin, reason) {
+    DispTickerCfmMsg(char const *error = MSG_ERROR_SUCCESS, char const *origin = MSG_UNDEF, char const *reason = MSG_REASON_UNSPEC) :
+        ErrorMsg("DispTickerCfmMsg", error, origin, reason) {
         m_len = sizeof(*this);
     }
 } __attribute__((packed));

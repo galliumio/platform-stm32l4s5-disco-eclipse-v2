@@ -127,14 +127,25 @@ protected:
 
     Timer m_stateTimer;
 
+#define UART_ACT_TIMER_EVT \
+    ADD_EVT(STATE_TIMER)
+
+#define UART_ACT_INTERNAL_EVT \
+    ADD_EVT(START) \
+    ADD_EVT(DONE) \
+    ADD_EVT(FAIL)
+
+#undef ADD_EVT
+#define ADD_EVT(e_) e_,
+
     enum {
-        STATE_TIMER = TIMER_EVT_START(UART_ACT),
+        UART_ACT_TIMER_EVT_START = TIMER_EVT_START(UART_ACT),
+        UART_ACT_TIMER_EVT
     };
 
     enum {
-        START = INTERNAL_EVT_START(UART_ACT),
-        DONE,
-        FAIL
+        UART_ACT_INTERNAL_EVT_START = INTERNAL_EVT_START(UART_ACT),
+        UART_ACT_INTERNAL_EVT
     };
 
     class Fail : public ErrorEvt {

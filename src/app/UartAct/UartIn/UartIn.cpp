@@ -46,24 +46,22 @@ FW_DEFINE_THIS_FILE("UartIn.cpp")
 
 namespace APP {
 
+#undef ADD_EVT
+#define ADD_EVT(e_) #e_,
+
 static char const * const timerEvtName[] = {
-    "ACTIVE_TIMER",
+    "UART_IN_TIMER_EVT_START",
+    UART_IN_TIMER_EVT
 };
 
 static char const * const internalEvtName[] = {
-    "DONE",
-    "DATA_RDY",
-    "DMA_RECV",
-    "FIFO_OVERFLOW",
-    "HW_FAIL",
+    "UART_IN_INTERNAL_EVT_START",
+    UART_IN_INTERNAL_EVT
 };
 
 static char const * const interfaceEvtName[] = {
-    "UART_IN_START_REQ",
-    "UART_IN_START_CFM",
-    "UART_IN_STOP_REQ",
-    "UART_IN_STOP_CFM",
-    "UART_IN_FAIL_IND",
+    "UART_IN_INTERFACE_EVT_START",
+    UART_IN_INTERFACE_EVT
 };
 
 static uint16_t GetInst(Hsmn hsmn) {
