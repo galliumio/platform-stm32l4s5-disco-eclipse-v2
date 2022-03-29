@@ -97,7 +97,7 @@ protected:
 
 class ErrorEvt : public Evt {
 public:
-    ErrorEvt(QP::QSignal signal, Hsmn to, Hsmn from = HSM_UNDEF, Sequence seq = 0,
+    ErrorEvt(QP::QSignal signal, Hsmn to = HSM_UNDEF, Hsmn from = HSM_UNDEF, Sequence seq = 0,
              Error error = ERROR_SUCCESS, Hsmn origin = HSM_UNDEF, Reason reason = 0) :
         Evt(signal, to, from, seq), m_error(error), m_origin(origin), m_reason(reason) {}
     ErrorEvt(QP::QSignal signal, Error error = ERROR_SUCCESS, Hsmn origin = HSM_UNDEF, Reason reason = 0) :

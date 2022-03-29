@@ -57,7 +57,7 @@ public:
     void Start(uint8_t prio);
     void Add(Region *reg);
     Hsm &GetHsm() { return m_hsm; }
-    virtual void dispatch(QP::QEvt const * const e);
+    virtual void dispatch(QP::QEvt const * const e, std::uint_fast8_t const qs_id);
 
     // Redirection to m_hsm.
     Hsmn GetHsmn() const { return m_hsm.GetHsmn(); }
@@ -125,6 +125,7 @@ protected:
     HsmnReg m_hsmnRegStor[MAX_REGION_COUNT];
     HsmnRegMap m_hsmnRegMap;
     QP::QEvt const *m_evtQueueStor[EVT_QUEUE_COUNT];
+    struct _reent m_tlsNewLib;      // Thread-local-storage for NewLib.
 };
 
 } // namespace FW

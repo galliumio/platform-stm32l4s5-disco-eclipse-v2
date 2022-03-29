@@ -51,6 +51,8 @@ using namespace QP;
 namespace FW {
 
 void XThread::Start(uint8_t prio) {
+    m_tlsNewLib = _REENT_INIT(m_tlsNewLib);
+    m_thread = &m_tlsNewLib;
     // OnRun() needs to be called here instead of at the beginning of the thread (started by start()).
     // It allows an HSM/region to be registered to the framework (via its Init() method) before an event
     // is posted to it (which may happen right after this Start() function returns).
@@ -84,7 +86,7 @@ void XThread::Dispatch(QEvt const * const e) {
     }
     HsmnReg *hsmnReg = m_hsmnRegMap.GetByKey(hsmn);
     if (hsmnReg && hsmnReg->GetValue()) {
-        hsmnReg->GetValue()->dispatch(e);
+        hsmnReg->GetValue()->Dispatch(e);
     }
 }
 

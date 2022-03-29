@@ -53,6 +53,8 @@ namespace FW {
 void Active::Start(uint8_t prio) {
     Fw::Add(m_hsm.GetHsmn(), &m_hsm, this);
     m_hsm.Init(this);
+    m_tlsNewLib = _REENT_INIT(m_tlsNewLib);
+    m_thread = &m_tlsNewLib;
     QActive::start(prio, m_evtQueueStor, ARRAY_COUNT(m_evtQueueStor), NULL, 0);
 }
 
@@ -66,7 +68,8 @@ void Active::Add(Region *reg) {
     Fw::Add(regHsmn, &reg->GetHsm(), this);
 }
 
-void Active::dispatch(QEvt const * const e) {
+void Active::dispatch(QEvt const * const e, std::uint_fast8_t const qs_id) {
+    (void)qs_id;
     Hsmn hsmn;
     // Discard event if it is associated with an undefined HSM.
     // This happens when a timer event already posted is canceled.
@@ -83,13 +86,13 @@ void Active::dispatch(QEvt const * const e) {
     if (hsmn == m_hsm.GetHsmn()) {
         // For active object, e must be from the active object's event queue (dynamic or static/timer).
         // Garbage collection, if needed, is done by the caller.
-        QHsm::dispatch(e);
+        QHsm::dispatch(e, 0);
         // Handle all reminder events generated as a result of e.
         m_hsm.DispatchReminder();
     } else {
         HsmnReg *hsmnReg = m_hsmnRegMap.GetByKey(hsmn);
         if (hsmnReg && hsmnReg->GetValue()) {
-            hsmnReg->GetValue()->dispatch(e);
+            hsmnReg->GetValue()->Dispatch(e);
         }
     }
 }

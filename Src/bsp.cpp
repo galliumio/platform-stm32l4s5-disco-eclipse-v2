@@ -108,6 +108,15 @@ extern "C" void BspTrace(char const *buf, uint32_t len) {
     WriteUart("\r", 1);
 }
 
+// Hooks required by multi-threading support for newlib malloc.
+extern "C" void __malloc_lock() {
+    QF_INT_DISABLE();
+}
+
+extern "C" void __malloc_unlock() {
+    QF_INT_ENABLE();
+}
+
 uint32_t GetSystemMs() {
     return HAL_GetTick() * BSP_MSEC_PER_TICK;
 }
@@ -185,6 +194,14 @@ void QXK::onIdle(void) {
     //
     //__WFI();   Wait-For-Interrupt
 #endif
+}
+
+// NOTE: the context-switch callback is called with interrupts DISABLED
+extern "C" void QXK_onContextSw(QActive *prev, QActive *next) {
+    (void)prev;
+    if (next != (QActive *)0) { // next is not the QK idle loop?
+        _impure_ptr = static_cast<struct _reent *>(next->m_thread); // switch to next TLS
+    }
 }
 
 //............................................................................
