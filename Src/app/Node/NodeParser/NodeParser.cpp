@@ -138,8 +138,14 @@ QState NodeParser::Started(NodeParser * const me, QEvt const * const e) {
             return Q_TRAN(&NodeParser::Stopped);
         }
         case WIFI_DATA_IND: {
+        /* readLen = MIN((dataLen, dataInFifo used cnt)
+          append readLen bytes from dataInFifo to msgInd->getBuf()
+          dataLen -= readLen
+          if (dataLen == 0) ^^DATA_DONE
+          if (dataInFifo not empty) ^WIFI_DATA_IND
+          else ^WIFI_DATA_RSP
+          */
             EVENT(e);
-            Evt const &ind = EVT_CAST(*e);
             uint32_t readLen;
             while ((readLen = LESS(me->m_dataLen, me->m_dataInFifo->GetUsedBlockCount()))) {
                 FW_ASSERT((me->m_msgIdx + readLen) <= NodeParserMsgInd::MAX_BUF_LEN);
@@ -155,6 +161,7 @@ QState NodeParser::Started(NodeParser * const me, QEvt const * const e) {
             }
             if (me->m_dataInFifo->GetUsedCount()) {
                 // Sends reminder to itself as some data remains in fifo.
+                Evt const &ind = EVT_CAST(*e);
                 me->Send(new WifiDataInd(me->GetHsmn(), ind.GetFrom(), ind.GetSeq()));
             } else {
                 // @todo ^WifiReadMoreReq.

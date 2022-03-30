@@ -87,7 +87,7 @@ public:
 class SystemStopReq : public Evt {
 public:
     enum {
-        TIMEOUT_MS = 15000      // Must be greater than NodeStopReq which is set to 12s.
+        TIMEOUT_MS = 33000      // Must be greater than NodeStopReq which is set to 32s.
     };
     SystemStopReq(Hsmn to, Hsmn from, Sequence seq) :
         Evt(SYSTEM_STOP_REQ, to, from, seq) {}
@@ -114,7 +114,7 @@ private:
 class SystemRestartReq : public Evt {
 public:
     enum {
-        TIMEOUT_MS = 16000
+        TIMEOUT_MS = SystemStopReq::TIMEOUT_MS + SystemStartReq::TIMEOUT_MS + 1000
     };
     SystemRestartReq() :
         Evt(SYSTEM_RESTART_REQ) {}
